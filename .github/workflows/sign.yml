@@ -1,0 +1,28 @@
+name: 科研通自动签到
+
+on:
+  schedule:
+    # 每天北京时间 08:30 执行（UTC 00:30）
+    - cron: '30 0 * * *'
+  workflow_dispatch: # 支持手动触发
+
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 执行签到
+        env:
+          ABLESCI_EMAIL: ${{ secrets.ABLESCI_EMAIL }}
+          ABLESCI_PASSWORD: ${{ secrets.ABLESCI_PASSWORD }}
+        run: python ablesci_sign.py
+
+      - name: 签到结果
+        if: always()
+        run: echo "签到流程执行完毕"
